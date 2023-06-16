@@ -32,10 +32,10 @@
 <div class="container">
     <div th:if="${books}">
         <div th:if="${books.isEmpty()}">
-            <span>Книг не найдено</span>
+            <h1 style="margin-top: 30px; margin-left: 50px">Книг не найдено</h1>
         </div>
 
-        <div>
+        <div th:if="${!books.isEmpty()}">
             <div class="row">
                 <h1 style="margin-top: 20px"> Список книг </h1>
             </div>
