@@ -1,20 +1,83 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Все книги</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
 </head>
 <body>
-<div th:each="book : ${books}">
-    <a th:href="@{/books/{id}(id=${book.getId()})}"
-       th:text="${book.getTitle()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYear()}"></a>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Система цифрового учета книг</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/people}">Список посетителей</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/books}">Список книг</a>
+            </li>
+        </ul>
+
+    </div>
+    <form class="d-flex" role="search" th:method="POST" th:action="@{/books/search}">
+        <input class="form-control me-2" type="search" placeholder="Посик" aria-label="Поиск" name="query">
+        <button class="btn btn-primary" type="submit">Найти</button>
+    </form>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <h1 style="margin-top: 20px"> Список книг </h1>
+    </div>
+
+    <div class="row">
+        <div style="margin-left: 15px">
+            <a th:href="@{/books/new}" class="btn btn-primary btn-sm mb-3"> Добавить книгу</a>
+            <a th:href="@{/books?sort_by_year=true}" class="btn btn-primary btn-sm mb-3"> Сортировать книги по году</a>
+            <a th:href="@{/books?backToTop=true}" class="btn btn-primary btn-sm mb-3"> В начало списка</a>
+        </div>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th> Название книги</th>
+            <th> Автор</th>
+            <th> Год издания</th>
+            <th> Действие</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="book: ${books}">
+            <td th:text="${book.getTitle()}"></td>
+            <td th:text="${book.getAuthor()}"></td>
+            <td th:text="${book.getYear()}"></td>
+            <td>
+                <a th:href="@{/books/{id}(id=${book.getId()})}"
+                   class="btn btn-primary">Подробнее</a>
+                <a th:href="@{/books/{id}/edit(id=${book.getId()})}"
+                   class="btn btn-info">Редактировать</a>
+                <a th:href="@{/books/{id}/delete(id=${book.getId()})}" th:method="POST"
+                   class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div style="margin-left: 15px">
+            <a th:if="${hidePrevious}" th:href="@{/books?previousPage=true}" class="btn btn-primary btn-sm mb-3">
+                Назад</a>
+            <a th:if="${hideNext}" th:href="@{/books?nextPage=true}" class="btn btn-primary btn-sm mb-3"> Далее</a>
+        </div>
+    </div>
 </div>
-<br/>
-<hr/>
-<a href="/books/new">Добавить Книгу</a>
-<br/>
-<a href="/people">Все посетители</a>
-<br/>
-<a href="/books/search">Поиск книг</a>
 </body>
 </html>

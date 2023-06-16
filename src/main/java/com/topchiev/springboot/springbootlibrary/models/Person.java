@@ -1,11 +1,7 @@
 package com.topchiev.springboot.springbootlibrary.models;
 
-
-import jakarta.persistence.*;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
-
+import javax.persistence.*;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Entity

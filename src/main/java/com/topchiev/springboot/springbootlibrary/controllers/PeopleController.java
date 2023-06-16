@@ -4,12 +4,13 @@ package com.topchiev.springboot.springbootlibrary.controllers;
 import com.topchiev.springboot.springbootlibrary.models.Person;
 import com.topchiev.springboot.springbootlibrary.services.PeopleService;
 import com.topchiev.springboot.springbootlibrary.util.PersonValidator;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 @Controller
 @RequestMapping("/people")
@@ -17,6 +18,7 @@ public class PeopleController {
 
     private final PeopleService peopleService;
     private final PersonValidator personValidator;
+    private static int pageCount = 0;
 
     @Autowired
     public PeopleController(PeopleService peopleService, PersonValidator personValidator) {
@@ -25,8 +27,32 @@ public class PeopleController {
     }
 
     @GetMapping()
-    public String showPeople(Model model) {
-        model.addAttribute("people", peopleService.findAll());
+    public String showPeople(Model model,
+                             @RequestParam(value = "nextPage", required = false) boolean nextPage,
+                             @RequestParam(value = "previousPage", required = false) boolean previousPage,
+                             @RequestParam(value = "backToTop", required = false) boolean backToTop) {
+        if (backToTop) {
+            pageCount = 0;
+            model.addAttribute("people", peopleService.findWithPagination(pageCount));
+        }
+        else if (nextPage) {
+            model.addAttribute("people", peopleService.findWithPagination(++pageCount));
+        } else if (previousPage && pageCount > 0) {
+            model.addAttribute("people", peopleService.findWithPagination(--pageCount));
+        } else {
+            model.addAttribute("people", peopleService.findWithPagination(pageCount));
+        }
+
+        if (pageCount == 0)
+            model.addAttribute("hidePrevious", false);
+        else
+            model.addAttribute("hidePrevious", true);
+
+        if (peopleService.findWithPagination(pageCount + 1).isEmpty())
+            model.addAttribute("hideNext", false);
+        else
+            model.addAttribute("hideNext", true);
+
         return "/people/show_people";
     }
 
@@ -60,7 +86,7 @@ public class PeopleController {
         return "/people/update_person";
     }
 
-    @PatchMapping("/{id}/edit")
+    @PostMapping("/{id}/edit")
     public String updatePerson(@PathVariable("id") int id,
                                @ModelAttribute("person") @Valid Person person, BindingResult result) {
         if (result.hasErrors()) {
@@ -70,7 +96,7 @@ public class PeopleController {
         return "redirect:/people";
     }
 
-    @DeleteMapping("/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String deletePerson(@PathVariable("id") int id) {
         peopleService.delete(id);
         return "redirect:/people";

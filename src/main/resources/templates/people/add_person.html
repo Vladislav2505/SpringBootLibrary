@@ -1,22 +1,76 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Новый посетитель</title>
+    <title>Добавление посетителя</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
 </head>
 <body>
-<form th:method="POST" th:action="@{/people/new}" th:object="${person}">
-    <label for="fullName">Введите ФИО:</label>
-    <input type="text" th:field="*{fullName}" id="fullName"/>
-    <div style="color: red" th:if="${#fields.hasErrors('fullName')}"
-         th:errors="*{fullName}">FullName error</div>
-    <br/>
-    <label for="yearOfBirth">Введите год рождения</label>
-    <input type="text" th:field="*{yearOfBirth}" id="yearOfBirth"/>
-    <div style="color: red" th:if="${#fields.hasErrors('yearOfBirth')}"
-         th:errors="*{yearOfBirth}">Year error</div>
-    <br/>
-    <input type="submit" value="Добавить!">
-</form>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Система цифрового учета книг</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/people}">Список посетителей</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+<br>
+<br>
+<div class="container">
+    <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 container justify-content-center card">
+            <h2 style="margin-top: 20px" class="text-center"> Добавление посетителя </h2>
+            <div class="card-body">
+                <form th:action="@{/people/new}" th:object="${person}" method="POST">
+                    <div class="form-group">
+                        <label> ФИО посетителя: </label>
+                        <input
+                                type="text"
+                                name="fullName"
+                                th:field="*{fullName}"
+                                class="form-control"
+                                placeholder="Введите фио"
+                        />
+                        <div style="color: red" th:if="${#fields.hasErrors('fullName')}"
+                             th:errors="*{fullName}">FullName error
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label> Год рождения: </label>
+                        <input
+                                type="text"
+                                name="yearOfBirth"
+                                th:field="*{yearOfBirth}"
+                                class="form-control"
+                                placeholder="Введите год рождения"
+                        />
+                        <div style="color: red" th:if="${#fields.hasErrors('yearOfBirth')}"
+                             th:errors="*{yearOfBirth}">FullName error
+                        </div>
+                    </div>
+
+
+                    <div class="box-footer">
+                        <button type="submit" class="btn btn-primary">
+                            Добавить
+                        </button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
 </body>
 </html>

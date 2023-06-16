@@ -1,18 +1,75 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Все посетители</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
 </head>
 <body>
-    <div th:each="person : ${people}">
-        <a th:href="@{/people/{id}(id=${person.getId()})}"
-        th:text="${person.getFullName()} + ', ' + ${person.getYearOfBirth()}"></a>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Система цифрового учета книг</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/people}">Список посетителей</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/books}">Список книг</a>
+            </li>
+        </ul>
     </div>
-<br/>
-<hr/>
-<a href="/people/new">Добавить человека</a>
-<br/>
-<a href="/books">Все книги</a>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <h1 style="margin-top: 20px"> Список посетителей </h1>
+    </div>
+
+    <div class="row">
+        <div style="margin-left: 15px">
+            <a th:href="@{/people/new}" class="btn btn-primary btn-sm mb-3"> Добавить посетителя</a>
+            <a th:href="@{/people?backToTop=true}" class="btn btn-primary btn-sm mb-3"> В начало списка</a>
+        </div>
+    </div>
+    <table class="table table-striped table-bordered">
+        <thead class="table-dark">
+        <tr>
+            <th> ФИО посетителя</th>
+            <th> Год рождения</th>
+            <th> Действие</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <tr th:each="person: ${people}">
+            <td th:text="${person.getFullName()}"></td>
+            <td th:text="${person.getYearOfBirth()}"></td>
+            <td>
+                <a th:href="@{/people/{id}(id=${person.getId()})}"
+                   class="btn btn-primary">Подробнее</a>
+                <a th:href="@{/people/{id}/edit(id=${person.getId()})}"
+                   class="btn btn-info">Редактировать</a>
+                <a th:href="@{/people/{id}/delete(id=${person.getId()})}" th:method="POST"
+                   class="btn btn-danger">Удалить</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div class="row">
+        <div style="margin-left: 15px">
+            <a th:if="${hidePrevious}" th:href="@{/people?previousPage=true}" class="btn btn-primary btn-sm mb-3">
+                Назад</a>
+            <a th:if="${hideNext}" th:href="@{/people?nextPage=true}" class="btn btn-primary btn-sm mb-3"> Далее</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

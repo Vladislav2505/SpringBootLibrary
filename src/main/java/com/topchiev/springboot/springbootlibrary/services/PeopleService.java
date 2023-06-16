@@ -6,6 +6,8 @@ import com.topchiev.springboot.springbootlibrary.models.Person;
 import com.topchiev.springboot.springbootlibrary.repositories.PeopleRepository;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,8 +59,11 @@ public class PeopleService {
         if (person.isPresent()) {
             Hibernate.initialize(person.get().getBooks());
             return person.get().getBooks();
-        }
-        else
+        } else
             return Collections.emptyList();
+    }
+
+    public List<Person> findWithPagination(Integer page) {
+        return peopleRepository.findAll(PageRequest.of(page, 6)).getContent();
     }
 }

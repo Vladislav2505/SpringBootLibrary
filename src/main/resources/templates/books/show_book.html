@@ -1,35 +1,70 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Информация о книге</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+          crossorigin="anonymous">
 </head>
 <body>
-<p th:text="${book.getTitle()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYear()}"/>
-<div th:if="${owner}">
-    <span>Книга сейчас у: </span><span th:text="${owner.getFullName()}"/>
-    <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
-        <input type="submit" value="Освободить книгу"/>
-    </form>
+<nav class="navbar navbar-expand-md bg-dark navbar-dark">
+    <a class="navbar-brand" href="#">Система цифрового учета книг</a>
+
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="collapsibleNavbar">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/books}">Список книг</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h1 style="margin-top: 20px" th:text="${book.getTitle()} + ', ' + ${book.getAuthor()} + ', ' + ${book.getYear()}"/>
+
+    <div th:if="${owner}">
+        <span style="font-size: 25px;">Книга сейчас у: </span>
+        <table style="margin-top: 20px" class="table table-striped table-bordered">
+            <thead class="table-dark">
+            <tr>
+                <th> ФИО посетителя</th>
+                <th> Год рождения</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td th:text="${owner.getFullName()}"></td>
+                <td th:text="${owner.getYearOfBirth()}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <form th:method="PATCH" th:action="@{/books/{id}/release(id=${book.getId()})}">
+            <input style="margin-top: 10px; font-size: 20px" type="submit" class="btn btn-primary btn-sm mb-3"
+                   value="Освободить книгу"/>
+        </form>
+    </div>
+
+    <div style="font-size: 20px" th:if="${people}">
+        <span>Эта книга свободна. Кому назначить ее?</span>
+        <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
+            <label for="people">Выберите человека</label>
+            <select th:object="${person}" th:field="*{id}" id="people">
+                <option th:each="person : ${people}" th:value="${person.getId()}" th:text="${person.getFullName()}">
+                </option>
+            </select>
+            <br/>
+            <input style="margin-top: 10px; font-size: 20px" type="submit" class="btn btn-primary btn-sm mb-3"
+                   value="Назначить книгу"/>
+        </form>
+    </div>
 </div>
-<div th:if="${people}">
-    <span>Эта книга свободна. Кому назначить ее?</span>
-    <form th:method="PATCH" th:action="@{/books/{id}/assign(id=${book.getId()})}">
-        <label for="people">Выберите человека</label>
-        <select th:object="${person}" th:field="*{id}" id="people">
-            <option th:each="person : ${people}" th:value="${person.getId()}" th:text="${person.getFullName()}">
-            </option>
-        </select>
-        <input type="submit" value="Назначить книгу"/>
-    </form>
-</div>
-<hr/>
-<form th:method="GET" th:action="@{/books/{id}/edit(id=${book.getId()})}">
-    <input type="submit" value="Редактировать"/>
-</form>
-<br/>
-<form th:method="DELETE" th:action="@{/books/{id}/delete(id=${book.getId()})}">
-    <input type="submit" value="Удалить"/>
-</form>
 </body>
 </html>

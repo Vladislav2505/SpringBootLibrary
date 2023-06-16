@@ -5,12 +5,14 @@ import com.topchiev.springboot.springbootlibrary.models.Book;
 import com.topchiev.springboot.springbootlibrary.models.Person;
 import com.topchiev.springboot.springbootlibrary.services.BooksService;
 import com.topchiev.springboot.springbootlibrary.services.PeopleService;
-import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.List;
 
 
 @Controller
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 public class BooksController {
     private final BooksService booksService;
     private final PeopleService peopleService;
+    private static int pageCount = 0;
 
     @Autowired
     public BooksController(BooksService booksService, PeopleService peopleService) {
@@ -28,12 +31,32 @@ public class BooksController {
     @GetMapping()
     public String showBooks(Model model,
                             @RequestParam(value = "sort_by_year", required = false) boolean sortByYear,
-                            @RequestParam(value = "page", required = false) Integer page,
-                            @RequestParam(value = "books_per_page", required = false) Integer booksPerPage) {
-        if(page == null || booksPerPage == null)
-            model.addAttribute("books", booksService.findAll(sortByYear));
+                            @RequestParam(value = "nextPage", required = false) boolean nextPage,
+                            @RequestParam(value = "previousPage", required = false) boolean previousPage,
+                            @RequestParam(value = "backToTop", required = false) boolean backToTop) {
+
+        if (backToTop) {
+            pageCount = 0;
+            model.addAttribute("books", booksService.findWithPagination(pageCount, sortByYear));
+        }
+        else if (nextPage) {
+            model.addAttribute("books", booksService.findWithPagination(++pageCount, sortByYear));
+        } else if (previousPage && pageCount > 0) {
+            model.addAttribute("books", booksService.findWithPagination(--pageCount, sortByYear));
+        } else {
+            model.addAttribute("books", booksService.findWithPagination(pageCount, sortByYear));
+        }
+
+        if (pageCount == 0)
+            model.addAttribute("hidePrevious", false);
         else
-            model.addAttribute("books", booksService.findWithPagination(page, booksPerPage, sortByYear));
+            model.addAttribute("hidePrevious", true);
+
+        if (booksService.findWithPagination(pageCount + 1, sortByYear).isEmpty())
+            model.addAttribute("hideNext", false);
+        else
+            model.addAttribute("hideNext", true);
+
         return "/books/show_books";
     }
 
@@ -71,7 +94,7 @@ public class BooksController {
         return "/books/update_book";
     }
 
-    @PatchMapping("/{id}/edit")
+    @PostMapping("/{id}/edit")
     public String updateBook(@PathVariable("id") int id,
                              @ModelAttribute("book") @Valid Book book, BindingResult result) {
         if (result.hasErrors())
@@ -81,7 +104,7 @@ public class BooksController {
         return "redirect:/books";
     }
 
-    @DeleteMapping("/{id}/delete")
+    @GetMapping("/{id}/delete")
     public String deleteBook(@PathVariable("id") int id) {
         booksService.delete(id);
         return "redirect:/books";
@@ -100,13 +123,13 @@ public class BooksController {
     }
 
     @GetMapping("/search")
-    public String searchBook(){
+    public String searchBook() {
         return "books/search_books";
     }
 
     @PostMapping("/search")
     public String makeSearch(
-            Model model, @RequestParam(value = "query", required = false) String query){
+            Model model, @RequestParam(value = "query", required = false) String query) {
         model.addAttribute("books", booksService.findByTitleStartingWith(query));
         return "books/search_books";
     }

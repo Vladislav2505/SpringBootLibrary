@@ -66,12 +66,12 @@ public class BooksService {
         });
     }
 
-    public List<Book> findWithPagination(Integer page, Integer booksPerPage, boolean sortByYear) {
+    public List<Book> findWithPagination(Integer page, boolean sortByYear) {
         if (sortByYear)
             return booksRepository.
-                    findAll(PageRequest.of(page, booksPerPage, Sort.by("year"))).getContent();
+                    findAll(PageRequest.of(page, 6, Sort.by("year"))).getContent();
         else
-            return booksRepository.findAll(PageRequest.of(page, booksPerPage)).getContent();
+            return booksRepository.findAll(PageRequest.of(page, 6)).getContent();
     }
 
     public List<Book> findByTitleStartingWith(String str){
